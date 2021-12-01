@@ -24,8 +24,28 @@
     <DalamudLibPath>$(appdata)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
   </PropertyGroup>
 
-  <ItemGroup>
+    <ItemGroup>
+	    <Content Include="..\Data\dungeons.json">
+		    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		    <Visible>false</Visible>
+	    </Content>
+    </ItemGroup>
+	<ItemGroup>
+		<Content Include="..\Data\trials.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Visible>false</Visible>
+		</Content>
+	</ItemGroup>
+	<ItemGroup>
+		<Content Include="..\Data\raids.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Visible>false</Visible>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
     <PackageReference Include="DalamudPackager" Version="2.1.4" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.38" />
   </ItemGroup>
 
   <ItemGroup>
