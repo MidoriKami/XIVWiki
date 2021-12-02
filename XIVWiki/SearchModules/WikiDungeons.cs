@@ -27,7 +27,7 @@ namespace XIVWiki.SearchModules
         public void InitializeDataTable()
         {
             var assemblyLocation = Assembly.GetExecutingAssembly().Location;
-            var filePath = Path.Combine(Path.GetDirectoryName(assemblyLocation)!, "dungeons.json");
+            var filePath = Path.Combine(Path.GetDirectoryName(assemblyLocation)!, @"data\dungeons.json");
 
             using (StreamReader r = new StreamReader(filePath))
             {

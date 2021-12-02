@@ -1,11 +1,18 @@
 {
   "Author": "MidoriKami",
-  "Name": "No Tank You",
-  "Punchline": "Simple plugin to show a warning if none of you tanks have tank stance on",
-  "Description": "/notankconfig",
-  "InternalName": "NoTankYou",
+  "Name": "XIV Wiki",
+  "Punchline": "Quickly search for anything ingame",
+  "Description": "Adds /wiki command, allowing you to search for various things found ingame quickly",
+  "InternalName": "XIVWiki",
   "ApplicableVersion": "any",
   "Tags": [
-    "plugin"
-  ]
+    "wiki",
+    "utility"
+  ],
+  "CategoryTags": [
+    "utility"
+  ],
+  "RepoUrl": "https://github.com/MidoriKami/XIVWiki",
+  "DalamudApiLevel": 4,
+  "IconUrl": "https://github.com/MidoriKami/XIVWiki/blob/master/images/icon.png"
 }

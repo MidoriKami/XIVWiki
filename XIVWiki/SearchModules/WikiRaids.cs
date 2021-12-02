@@ -26,7 +26,7 @@ namespace XIVWiki.SearchModules
         public void InitializeDataTable()
         {
             var assemblyLocation = Assembly.GetExecutingAssembly().Location;
-            var filePath = Path.Combine(Path.GetDirectoryName(assemblyLocation)!, "raids.json");
+            var filePath = Path.Combine(Path.GetDirectoryName(assemblyLocation)!, @"data\raids.json");
 
             using (StreamReader r = new StreamReader(filePath))
             {
