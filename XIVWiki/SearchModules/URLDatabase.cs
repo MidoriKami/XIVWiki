@@ -2,39 +2,40 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace XIVWiki.SearchModules
 {
-    internal class WikiDungeons : iSearchable
+    internal class URLDatabase
     {
         private readonly RegexOptions regexOptions = RegexOptions.IgnoreCase | RegexOptions.CultureInvariant;
 
-        private Dictionary<string, string> lookuptable = new();
+        Dictionary<string, string> Lookuptable { get; set; }
 
-        public WikiDungeons()
+        public URLDatabase(string jsonfilename)
         {
-            InitializeDataTable();
-
-            Service.Chat.Print("[XIV Wiki][dungeons] init complete");
+            LoadJsonFromFile(jsonfilename);
         }
 
-        public void InitializeDataTable()
+        private void LoadJsonFromFile(string jsonfilename)
         {
             var assemblyLocation = Assembly.GetExecutingAssembly().Location;
-            var filePath = Path.Combine(Path.GetDirectoryName(assemblyLocation)!, @"data\dungeons.json");
+            var filePath = Path.Combine(Path.GetDirectoryName(assemblyLocation)!, $@"data\{jsonfilename}");
 
-            using (StreamReader r = new StreamReader(filePath))
+            using (StreamReader r = new(filePath))
             {
                 string json = r.ReadToEnd();
-                lookuptable = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                Lookuptable = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+
             }
         }
-
-        internal void PrintDatabase()
+        public void PrintDatabase()
         {
-            foreach (var pair in lookuptable)
+            foreach (var pair in Lookuptable)
             {
                 Service.Chat.Print(pair.Key);
             }
@@ -42,10 +43,10 @@ namespace XIVWiki.SearchModules
 
         public KeyValuePair<string, string>? FindMatch(string searchTerm)
         {
-            foreach (var pair in lookuptable)
+            foreach (var pair in Lookuptable)
             {
-                var strippedKey = Regex.Replace(pair.Key, "[^a-zA-Z0-9 ]", String.Empty);
-                var strippedSearchTerm = Regex.Replace(searchTerm, "[^a-zA-Z0-9 ]", String.Empty);
+                var strippedKey = Regex.Replace(pair.Key, "[^a-zA-Z0-9 ]", string.Empty);
+                var strippedSearchTerm = Regex.Replace(searchTerm, "[^a-zA-Z0-9 ]", string.Empty);
 
                 if (Regex.Match(strippedKey, strippedSearchTerm, regexOptions).Success)
                 {
