@@ -10,7 +10,7 @@ namespace XIVWiki
     {
         private readonly string rootURL = "https://ffxiv.consolegameswiki.com";
         private readonly string _command = "/wiki";
-        private List<iSearchable> databases = new();
+        private readonly List<URLDatabase> databases = new();
 
         public WikiCommand()
         {
@@ -23,9 +23,10 @@ namespace XIVWiki
 
         private void InitializeDatabases()
         {
-            databases.Add(new WikiDungeons());
-            databases.Add(new WikiTrials());
-            databases.Add(new WikiRaids());
+            databases.Add(new URLDatabase("dungeons.json"));
+            databases.Add(new URLDatabase("trials.json"));
+            databases.Add(new URLDatabase("raids.json"));
+            databases.Add(new URLDatabase("trialbosses.json"));
         }
 
         private void RegisterCommand()
@@ -52,7 +53,7 @@ namespace XIVWiki
             }
             else
             {
-                Service.Chat.Print($"[XIV Wiki][error] Term not Found: {args}");
+                Service.Chat.Print($"[XIV Wiki][error] No Matches Found: {args}");
             }
         }
 

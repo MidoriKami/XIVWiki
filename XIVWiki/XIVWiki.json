@@ -1,11 +1,11 @@
 {
   "Author": "MidoriKami",
   "Name": "XIV Wiki",
-  "Punchline": "Quickly search for anything ingame",
-  "Description": "Adds /wiki command, allowing you to search for various things found ingame quickly",
+  "Punchline": "Quickly look up things from ingame",
+  "Description": "Adds /wiki command, allowing you to quick search the wiki for instances and bosses",
   "InternalName": "XIVWiki",
   "ApplicableVersion": "any",
-  "AssemblyVersion": "1.1.0.0",
+  "AssemblyVersion": "1.1.3.0",
   "Tags": [
     "wiki",
     "utility"
