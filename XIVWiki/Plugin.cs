@@ -1,10 +1,5 @@
-﻿using Dalamud.Game.Command;
-using Dalamud.IoC;
+﻿using Dalamud.IoC;
 using Dalamud.Plugin;
-using System.IO;
-using System.Reflection;
-using Dalamud.Game.ClientState;
-using Dalamud.Game.ClientState.Party;
 
 namespace XIVWiki
 {

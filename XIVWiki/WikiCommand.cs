@@ -2,10 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using XIVWiki.SearchModules;
 
 namespace XIVWiki
@@ -50,7 +46,7 @@ namespace XIVWiki
 
             KeyValuePair<string, string>? result = SearchDatabase(args);
 
-            if(result != null)
+            if (result != null)
             {
                 LaunchPage(result.Value.Value);
             }
@@ -64,11 +60,11 @@ namespace XIVWiki
         {
             KeyValuePair<string, string>? result = null;
 
-            foreach(var database in databases)
+            foreach (var database in databases)
             {
                 result = database.FindMatch(searchTerm);
 
-                if(result != null)
+                if (result != null)
                 {
                     break;
                 }

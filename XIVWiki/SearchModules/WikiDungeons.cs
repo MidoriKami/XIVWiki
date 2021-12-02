@@ -1,13 +1,9 @@
-﻿using HtmlAgilityPack;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
 using System.IO;
-using System.Text.RegularExpressions;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace XIVWiki.SearchModules
 {
@@ -38,7 +34,7 @@ namespace XIVWiki.SearchModules
 
         internal void PrintDatabase()
         {
-            foreach(var pair in lookuptable)
+            foreach (var pair in lookuptable)
             {
                 Service.Chat.Print(pair.Key);
             }
