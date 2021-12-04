@@ -54,6 +54,9 @@ namespace XIVWiki
             else
             {
                 Service.Chat.Print($"[XIV Wiki][error] No Matches Found: {args}");
+                Service.Chat.Print($"[XIV Wiki][debug] Invoking Search Query");
+
+                InvokeSearchQuery(args);
             }
         }
 
@@ -72,6 +75,14 @@ namespace XIVWiki
             }
 
             return result;
+        }
+
+        private void InvokeSearchQuery(string searchterm)
+        {
+            var urlBase = "/mediawiki/";
+            var queryString = $"index.php?search={searchterm}&title=Special%3ASearch&go=Go";
+
+            LaunchPage(urlBase + queryString);
         }
 
         private void LaunchPage(string page)
