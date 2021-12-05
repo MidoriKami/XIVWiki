@@ -26,27 +26,34 @@
   </PropertyGroup>
 
     <ItemGroup>
-	    <Content Include="..\Data\dungeons.json">
+	    <Content Include="..\data\dungeons.json">
 			<Link>data\dungeons.json</Link>
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		    <Visible>false</Visible>
 	    </Content>
     </ItemGroup>
 	<ItemGroup>
-		<Content Include="..\Data\trials.json">
+		<Content Include="..\data\trials.json">
 			<Link>data\trials.json</Link>
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Visible>false</Visible>
 		</Content>
 	</ItemGroup>
 	<ItemGroup>
-		<Content Include="..\Data\raids.json">
+		<Content Include="..\data\raids.json">
 			<Link>data\raids.json</Link>
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Visible>false</Visible>
 		</Content>
 	</ItemGroup>
-
+	<ItemGroup>
+		<Content Include="..\data\trialbosses.json">
+			<Link>data\raids.json</Link>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Visible>false</Visible>
+		</Content>
+	</ItemGroup>
+	
 	<ItemGroup>
     <PackageReference Include="DalamudPackager" Version="2.1.5" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.38" />
