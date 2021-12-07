@@ -14,7 +14,7 @@ namespace XIVWiki.SearchModules
     {
         private readonly RegexOptions regexOptions = RegexOptions.IgnoreCase | RegexOptions.CultureInvariant;
 
-        Dictionary<string, string> Lookuptable { get; set; }
+        Dictionary<string, string> Lookuptable { get; set; } = new Dictionary<string, string>();
 
         public URLDatabase(string jsonfilename)
         {
