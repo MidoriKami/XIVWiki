@@ -1,5 +1,5 @@
 # XIV Wiki
-Extremely simple plugin, only adds a single command **/wiki** which allows you to quickly open wikipages from linked items or context 
+Extremely simple plugin, only adds a single command **/wiki** which allows you to quickly open wikipages from linked items or ingame context 
 
 ### WIP - Upcoming Features
 
