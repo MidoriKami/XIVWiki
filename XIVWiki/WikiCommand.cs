@@ -3,6 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using XIVWiki.SearchModules;
+using Dalamud.Game.ClientState;
+using Lumina.Excel.GeneratedSheets;
+using System.Linq;
 
 namespace XIVWiki
 {
@@ -39,13 +42,40 @@ namespace XIVWiki
 
         private void CommandCallback(string command, string args)
         {
-            if (args == "alive")
+            switch (args)
             {
-                Service.Chat.Print("[XIV Wiki][alive] still alive.");
-                return;
-            }
+                case "alive":
+                    Service.Chat.Print("[XIV Wiki][alive] still alive.");
+                    return;
 
-            KeyValuePair<string, string>? result = SearchDatabase(args);
+                case "here":
+                    var instanceName = GetCurrentInstanceName();
+                    TrySearch(instanceName);
+                    break;
+
+                default:
+                    TrySearch(args);
+                    break;
+
+            }
+        }
+
+        private string GetCurrentInstanceName()
+        {
+            var territoryTypeTable = Service.DataManager.GetExcelSheet<TerritoryType>();
+            var placeNameTable = Service.DataManager.GetExcelSheet<PlaceName>();
+
+            var currentTerritoryID = Service.ClientState.TerritoryType;
+
+            var currentTerritoryPlaceNameID = territoryTypeTable!.GetRow(currentTerritoryID)!.PlaceName.Row;
+            var currentTerritoryName = placeNameTable!.GetRow(currentTerritoryPlaceNameID)!.Name;
+
+            return currentTerritoryName;
+        }
+
+        private void TrySearch(string args)
+        {
+            KeyValuePair<string, string>? result = SearchLocalDatabases(args);
 
             if (result != null)
             {
@@ -60,7 +90,7 @@ namespace XIVWiki
             }
         }
 
-        private KeyValuePair<string, string>? SearchDatabase(string searchTerm)
+        private KeyValuePair<string, string>? SearchLocalDatabases(string searchTerm)
         {
             KeyValuePair<string, string>? result = null;
 

@@ -4,7 +4,7 @@
     <Authors></Authors>
     <Company></Company>
     <Version>1.0</Version>
-    <AssemblyVersion>1.1.4.0</AssemblyVersion>
+    <AssemblyVersion>1.1.5.0</AssemblyVersion>
     <Description>Adds /wiki command, allowing you to search for various things found ingame quickly</Description>
     <Copyright></Copyright>
     <PackageProjectUrl>https://github.com/MidoriKami/XIVWiki</PackageProjectUrl>
