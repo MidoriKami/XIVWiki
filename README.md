@@ -1,20 +1,22 @@
 # XIV Wiki
-Extremely simple plugin, only adds a single command **/wiki**
-  
-### Why is this useful?
-If you are in a instance, and the boss or a monster does something unexpected, and you want to know what the mechanics are, you can simply **/wiki [instancename]** and it will pull up the wiki article in a web browser.
+Extremely simple plugin, only adds a single command **/wiki** which allows you to quickly open wikipages from linked items or ingame context 
 
-### You will get better results with more precise search terms
+### WIP - Upcoming Features
 
-The search returns the first url that even partially matches your search.
+Several amazing suggestions have been presented by the community!
+This will allow the XIV Wiki to be quite awesome!
 
-For example, "Turn 1" will return The Binding Coil of Bahamut Turn 1, even though "The Second Coil of Bahamut - Turn 1" and "The Final Coil of Bahamut - Turn 1" are valid results.
+* Search for items via ingame link **<item>**
+* Search using auto-translate text
+* Display a Textbox onscreen to search
+  * Display auto-complete text for things with similar names
+* Integrate with Browser Host to open **/wiki** searches ingame
 
-However, for many instances shorthand does work, especially if the shothand is unique.
+# Commands
 
-For example, prae should always return The Praetorium.
-
-### This tool only includes Dungeons, Raids, and Trials
-This tool works by referencing pre-generated json files generated with my [XIV Parsing Tool](https://github.com/MidoriKami/XIVWikiParser).
-
-If you would like to reach out and help me develop a better method for lookup please dont hesitate to post an issue.
+| Command             | Description                                                  |
+|---------------------|--------------------------------------------------------------|
+| /wiki               | Opens the Onscreen Searchbox                                 |
+| /wiki here          | Opens the wiki page for the instance you are currently in    |
+| /wiki [search term] | Opens the wiki page for the search term input                |
+| /wiki alive         | Responds in chat if the Wiki Command is active and available |
