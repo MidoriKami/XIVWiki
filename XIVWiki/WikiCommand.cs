@@ -6,30 +6,25 @@ using XIVWiki.SearchModules;
 using Dalamud.Game.ClientState;
 using Lumina.Excel.GeneratedSheets;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace XIVWiki
 {
     internal class WikiCommand : IDisposable
     {
+        private readonly RegexOptions regexOptions = RegexOptions.IgnoreCase | RegexOptions.CultureInvariant;
         private readonly string rootURL = "https://ffxiv.consolegameswiki.com";
         private readonly string _command = "/wiki";
-        private readonly List<URLDatabase> databases = new();
+
+        private readonly Lumina.Excel.ExcelSheet<PlaceName> PlaceNameSheet;
 
         public WikiCommand()
         {
             RegisterCommand();
 
-            InitializeDatabases();
+            PlaceNameSheet = Service.DataManager.GetExcelSheet<PlaceName>()!;
 
             Service.Chat.Enable();
-        }
-
-        private void InitializeDatabases()
-        {
-            databases.Add(new URLDatabase("dungeons.json"));
-            databases.Add(new URLDatabase("trials.json"));
-            databases.Add(new URLDatabase("raids.json"));
-            databases.Add(new URLDatabase("trialbosses.json"));
         }
 
         private void RegisterCommand()
@@ -45,18 +40,31 @@ namespace XIVWiki
             switch (args)
             {
                 case "alive":
-                    Service.Chat.Print("[XIV Wiki][alive] still alive.");
+                    Service.Chat.Print("[XIV Wiki] Still Alive");
                     return;
 
                 case "here":
                     var instanceName = GetCurrentInstanceName();
-                    TrySearch(instanceName);
+                    LaunchPage( GetURLWithSearchQuery(instanceName) );
                     break;
 
                 default:
-                    TrySearch(args);
+                    FindMatchAndLaunchPage(args);
                     break;
+            }
+        }
 
+        private void FindMatchAndLaunchPage(string args)
+        {
+            var properSearchString = FindMatch(args);
+
+            if (properSearchString == null)
+            {
+                LaunchPage(GetURLWithSearchQuery(args));
+            }
+            else
+            {
+                LaunchPage(GetURLWithSearchQuery(properSearchString));
             }
         }
 
@@ -73,59 +81,44 @@ namespace XIVWiki
             return currentTerritoryName;
         }
 
-        private void TrySearch(string args)
-        {
-            KeyValuePair<string, string>? result = SearchLocalDatabases(args);
-
-            if (result != null)
-            {
-                LaunchPage(result.Value.Value);
-            }
-            else
-            {
-                Service.Chat.Print($"[XIV Wiki][error] No Matches Found: {args}");
-                Service.Chat.Print($"[XIV Wiki][debug] Invoking Search Query");
-
-                InvokeSearchQuery(args);
-            }
-        }
-
-        private KeyValuePair<string, string>? SearchLocalDatabases(string searchTerm)
-        {
-            KeyValuePair<string, string>? result = null;
-
-            foreach (var database in databases)
-            {
-                result = database.FindMatch(searchTerm);
-
-                if (result != null)
-                {
-                    break;
-                }
-            }
-
-            return result;
-        }
-
-        private void InvokeSearchQuery(string searchterm)
+        private string GetURLWithSearchQuery(string searchTerm)
         {
             var urlBase = "/mediawiki/";
-            var queryString = $"index.php?search={searchterm}&title=Special%3ASearch&go=Go";
+            var queryString = $"index.php?search={searchTerm}&title=Special%3ASearch&go=Go";
 
-            LaunchPage(urlBase + queryString);
+            return rootURL + urlBase + queryString;
         }
 
         private void LaunchPage(string page)
         {
-            string fullURL = rootURL + page;
-
             var psi = new ProcessStartInfo
             {
                 UseShellExecute = true,
-                FileName = fullURL
+                FileName = page
             };
 
             Process.Start(psi);
+        }
+
+        private string? SearchPlaceName(string searchTerm)
+        {
+            var results = PlaceNameSheet.Where(r => Regex.Match(r.Name, searchTerm, regexOptions).Success);
+
+            if( results.Any() )
+            {
+                return results.First().Name.ToString();
+            }
+
+            return null;
+        }
+
+        public string? FindMatch(string searchTerm)
+        {
+            // Search all known instance names for a match
+            var searchResult = SearchPlaceName(searchTerm);
+            if(searchResult != null) return searchResult;
+
+            return null;
         }
 
         private void UnregisterCommand()
