@@ -17,11 +17,12 @@ namespace XIVWiki
         private readonly string _command = "/wiki";
 
         private readonly Lumina.Excel.ExcelSheet<PlaceName> PlaceNameSheet;
-
-        public WikiCommand()
+        private PopupSearchBox PopupSearchBox;
+        public WikiCommand(PopupSearchBox popupSearchBox)
         {
             RegisterCommand();
 
+            this.PopupSearchBox = popupSearchBox;
             PlaceNameSheet = Service.DataManager.GetExcelSheet<PlaceName>()!;
 
             Service.Chat.Enable();
@@ -48,45 +49,61 @@ namespace XIVWiki
                     LaunchPage( GetURLWithSearchQuery(instanceName) );
                     break;
 
+                case "":
+                    PopupSearchBox.Active = true;
+                    break;
+
                 default:
                     FindMatchAndLaunchPage(args);
                     break;
             }
         }
 
+
+        // Attempts to match the user typed args to an entry found in the data tables we use
+        // If a match is found, we will search for the full exact name of the entry
+        // If a match is not found, we will search for whatever the user typed in
         private void FindMatchAndLaunchPage(string args)
         {
             var properSearchString = FindMatch(args);
 
             if (properSearchString == null)
             {
+                // Launches a search query with whatever terms the user input
                 LaunchPage(GetURLWithSearchQuery(args));
             }
             else
             {
+                // Should always launch a page that will redirect directly to a valid FFXIV thing
                 LaunchPage(GetURLWithSearchQuery(properSearchString));
             }
         }
 
         private string GetCurrentInstanceName()
         {
+            // Load the relevent data tables.
             var territoryTypeTable = Service.DataManager.GetExcelSheet<TerritoryType>();
-            var placeNameTable = Service.DataManager.GetExcelSheet<PlaceName>();
 
-            var currentTerritoryID = Service.ClientState.TerritoryType;
+            // Get the territory we are currently in by RowID
+            ushort currentTerritoryID = Service.ClientState.TerritoryType;
 
-            var currentTerritoryPlaceNameID = territoryTypeTable!.GetRow(currentTerritoryID)!.PlaceName.Row;
-            var currentTerritoryName = placeNameTable!.GetRow(currentTerritoryPlaceNameID)!.Name;
+            // Get the entire row for the territory we are currently in
+            TerritoryType currentTerritoryTypeRow = territoryTypeTable!.GetRow(currentTerritoryID)!;
 
-            return currentTerritoryName;
+            // Get the PlaceName RowID from TerritoryType
+            uint placeNameRowID = currentTerritoryTypeRow!.PlaceName.Row;
+
+            // Get the PlaceName Row
+            PlaceName? placeNameRow = PlaceNameSheet!.GetRow(placeNameRowID);
+
+            return placeNameRow!.Name;
         }
 
         private string GetURLWithSearchQuery(string searchTerm)
         {
-            var urlBase = "/mediawiki/";
-            var queryString = $"index.php?search={searchTerm}&title=Special%3ASearch&go=Go";
+            var queryString = $"/mediawiki/index.php?search={searchTerm}&title=Special%3ASearch&go=Go";
 
-            return rootURL + urlBase + queryString;
+            return rootURL + queryString;
         }
 
         private void LaunchPage(string page)
@@ -100,6 +117,8 @@ namespace XIVWiki
             Process.Start(psi);
         }
 
+        // Performs a lazy regex match, uses the first PlaceName that contains the search term in any part of the name.
+        // ie: "prae" = "The Praetorium"
         private string? SearchPlaceName(string searchTerm)
         {
             var results = PlaceNameSheet.Where(r => Regex.Match(r.Name, searchTerm, regexOptions).Success);
