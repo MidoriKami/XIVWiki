@@ -7,6 +7,7 @@ using Dalamud.Game.ClientState;
 using Lumina.Excel.GeneratedSheets;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Lumina.Excel;
 
 namespace XIVWiki
 {
@@ -16,16 +17,48 @@ namespace XIVWiki
         private readonly string rootURL = "https://ffxiv.consolegameswiki.com";
         private readonly string _command = "/wiki";
 
-        private readonly Lumina.Excel.ExcelSheet<PlaceName> PlaceNameSheet;
+        private HashSet<string> InstanceNames = new();
+        private HashSet<string> InstanceNamesFallback = new();
+        private List<HashSet<string>> Databases = new();
+
         private PopupSearchBox PopupSearchBox;
+
+
         public WikiCommand(PopupSearchBox popupSearchBox)
         {
             RegisterCommand();
 
             this.PopupSearchBox = popupSearchBox;
-            PlaceNameSheet = Service.DataManager.GetExcelSheet<PlaceName>()!;
+
+            InitializeDataSheets();
 
             Service.Chat.Enable();
+        }
+
+        private void InitializeDataSheets()
+        {
+            var ContentFinderCondition = Service.DataManager.GetExcelSheet<ContentFinderCondition>()!;
+
+            // 2 - Dungeon 4 - Tiral 5 - Raid (Includes Alliance Raids) 28 - Ultimate Raids
+            InstanceNames = ContentFinderCondition
+                // Get rows that are instances
+                .Where(r => r.ContentType.Value!.RowId is 2 or 4 or 5 or 28)
+                // Reference TerritoryTypes
+                .Select(r => r.TerritoryType.Value)
+                // Reference PlaceName
+                .Select(r => r!.PlaceName.Value!.Name.ToString())
+                .ToHashSet();
+
+            Databases.Add(InstanceNames);
+
+
+            // Generate Fallback List, some of these have malformed names
+            InstanceNamesFallback = ContentFinderCondition
+                .Select(r => r.Name.ToString())
+                .ToHashSet();
+
+            Databases.Add(InstanceNamesFallback);
+            
         }
 
         private void RegisterCommand()
@@ -81,22 +114,12 @@ namespace XIVWiki
 
         private string GetCurrentInstanceName()
         {
-            // Load the relevent data tables.
             var territoryTypeTable = Service.DataManager.GetExcelSheet<TerritoryType>();
-
-            // Get the territory we are currently in by RowID
             ushort currentTerritoryID = Service.ClientState.TerritoryType;
 
-            // Get the entire row for the territory we are currently in
-            TerritoryType currentTerritoryTypeRow = territoryTypeTable!.GetRow(currentTerritoryID)!;
-
-            // Get the PlaceName RowID from TerritoryType
-            uint placeNameRowID = currentTerritoryTypeRow!.PlaceName.Row;
-
-            // Get the PlaceName Row
-            PlaceName? placeNameRow = PlaceNameSheet!.GetRow(placeNameRowID);
-
-            return placeNameRow!.Name;
+            return territoryTypeTable
+                !.GetRow(currentTerritoryID)
+                !.PlaceName.Value!.Name;
         }
 
         private string GetURLWithSearchQuery(string searchTerm)
@@ -117,25 +140,33 @@ namespace XIVWiki
             Process.Start(psi);
         }
 
-        // Performs a lazy regex match, uses the first PlaceName that contains the search term in any part of the name.
+        // Performs a lazy regex match
         // ie: "prae" = "The Praetorium"
-        private string? SearchPlaceName(string searchTerm)
+        public string? FindMatch(string searchTerm)
         {
-            var results = PlaceNameSheet.Where(r => Regex.Match(r.Name, searchTerm, regexOptions).Success);
-
-            if( results.Any() )
+            foreach(var database in Databases)
             {
-                return results.First().Name.ToString();
+                var result = SearchHastsetForTerm(searchTerm, database);
+                if (result != null)
+                {
+                    Service.Chat.Print($"[XIVWiki][Search Result] Match Found: {result}");
+                    return result;
+                }
             }
 
+            Service.Chat.Print($"[XIVWiki][Search Result] No Matches Found for: {searchTerm}");
             return null;
         }
 
-        public string? FindMatch(string searchTerm)
+        private string? SearchHastsetForTerm(string searchTerm, HashSet<string> InstanceNames)
         {
-            // Search all known instance names for a match
-            var searchResult = SearchPlaceName(searchTerm);
-            if(searchResult != null) return searchResult;
+            foreach(var instanceName in InstanceNames)
+            { 
+                if(Regex.Match(instanceName, searchTerm, regexOptions).Success)
+                {
+                    return instanceName;
+                }
+            }
 
             return null;
         }
