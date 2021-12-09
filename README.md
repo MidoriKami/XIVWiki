@@ -10,7 +10,8 @@ This will allow the XIV Wiki to be quite awesome!
 * Search using auto-translate text
 * Display a Textbox onscreen to search
   * Display auto-complete text for things with similar names
-* Integrate with Browser Host to open **/wiki** searches ingame
+* ~~Integrate with Browser Host to open **/wiki** searches ingame~~
+  * Browser Host does not provide a sufficient experience to be used smoothly with XIVWiki
 
 # Commands
 
