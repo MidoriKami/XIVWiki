@@ -1,3 +1,6 @@
+# Depricated Project
+See https://github.com/goaaats/Dalamud.FindAnything for replacement
+
 # XIV Wiki
 Extremely simple plugin, only adds a single command **/wiki** which allows you to quickly open wikipages from linked items or ingame context 
 
